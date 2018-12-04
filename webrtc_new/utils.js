@@ -143,7 +143,7 @@ async function maskVideo(segmentation) {
         //     frameF.data[i*4 + 3] = frameC.data[i*4 + 3];
         // }
         if (segmentation[i] == 1) {
-            //draw mask with code background
+            //draw mask with green background
             frameF.data[i*4] = frameF.data[i];
             frameF.data[i*4 + 1] = frameF.data[i*4 + 1];
             frameF.data[i*4 + 2] = frameF.data[i*4 + 2];
