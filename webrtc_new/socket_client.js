@@ -31,10 +31,6 @@
 				videoElement.play();
 				connectPeer();
 			};
-			// canvasElement.onloadedmetadata = function(e) {
-			// 	//canvasElement.play();
-			// 	connectPeer();
-			// };
 		})
 		.catch(function(err) {
 			/* Handle the error */
@@ -42,30 +38,31 @@
 		});
 	});
 	function connectPeer() {
-		// Register for an API Key:	http://peerjs.com/peerserver
-		//var peer = new Peer({key: '7ifmum8rcw61or'});
-		//peer = new Peer({host: '104.131.82.13', port: 9000, path: '/'});
-                peer = new Peer({host: 'ra2548-2.itp.io', port: 9000, path: '/'});
+        peer = new Peer({host: 'ra2548-2.itp.io', port: 9000, path: '/'});
 		// Get an ID from the PeerJS server
 		peer.on('open', function(id) {
 			console.log('My peer ID is: ' + id);
 			peer_id = id;
 
-			socket = io.connect();
-
-			socket.on('connect', function() {
-				console.log("connect");
-				socket.emit('peerid',peer_id);
-			});
-
-			socket.on('peerid',function(data) {
-				//makeCall(data);
+			// receive/send peerIds from other clients
+			sockets = io.connect();
+			var message = peer_id;
+			var sendId = function(message) {
+				console.log("peerId: " + message);
+				sockets.emit('peerId', message);
+			};
+			sendId(message);
+			sockets.on('peerId', function (clients) {
+				console.log("somebody connected, received new list of clients: " + clients)
 			});
 		});
 
+
+		// peer server part
 		peer.on('error', function(err) {
 			console.log(err);
 		});
+
 
 		peer.on('call', function(incoming_call) {
 			console.log("Got a call!");

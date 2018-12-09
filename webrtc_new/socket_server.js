@@ -13,11 +13,6 @@ var options = {
 function handleIt(req, res) {
 	console.log("The URL is: " + req.url);
 
-	//req is an IncominMessage: http://nodejs.org/api/http.html#http_http_incomingmessage
-	//res is a ServerResponse: http://nodejs.org/api/http.html#http_class_http_serverresponse
-	//res.writeHead(200, {'Content-Type': 'text/html'});
-	//res.end('<html><body><b>Hello World</b></body></html>\n');
-
 	var parsedUrl = url.parse(req.url);
 	console.log("They asked for " + parsedUrl.pathname);
 
@@ -71,21 +66,13 @@ io.sockets.on('connection',
 	function (socket) {
 
 
-		console.log("We have a new client: " + socket.id);
+        console.log("We have a new client: " + socket.id);
 
-		socket.on('peerid', function(data) {
-			//io.sockets.emit("peerid", data);
-			socket.broadcast.emit('peerid', data);
-
-			for (var c = 0; c < clients.length; c++) {
-				socket.emit('peerid',clients[c]);
-			}
-
-			clients.push(data);
-		});
-
-		socket.on('drawing', function(data) {
-			io.sockets.emit("drawing", data);
-		});
+        // get peerIds from clients, send them around as list to all clients
+        socket.on('peerId', function(message) {
+            console.log("Received: 'peerId' " + message);
+            clients.push(message);
+            io.sockets.emit('peerId', clients);
+        });
 	}
 );

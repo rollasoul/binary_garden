@@ -14,3 +14,8 @@ p {
    max-width: 1080;
    word-wrap: break-word;
    }
+ button {
+     font-family: 'Cutive Mono', monospace;
+     font-size:14;
+     text-align: center;
+ }

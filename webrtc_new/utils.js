@@ -18,6 +18,8 @@ const canvasF = document.getElementById('canvasF');
 var ctxF = canvasF.getContext('2d');
 var canvasCode = document.getElementById('canvasCode');
 var contextCode = canvasCode.getContext('2d');
+var canvasBase = document.getElementById('canvasBase');
+var contextBase = canvasBase.getContext('2d');
 const videoWidth = 640;
 const videoHeight = 740;
 var segmentation = 0;
@@ -28,11 +30,12 @@ let video = document.getElementById('thevideo');
 
 //hide canvas feeds (except the final canvas outputB)
 document.getElementById('thevideo').style.display = 'none';
+document.getElementById('myvideo').style.display = 'none';
 document.getElementById('output1').style.display = 'none';
 document.getElementById('output2').style.display = 'none';
 //document.getElementById('outputB').style.display = 'none';
 document.getElementById('canvasCode').style.display = 'none';
-
+document.getElementById('canvasBase').style.display = 'none';
 // Constraints - what do we want?
 let constraints1 = { audio: false, video: true }
 
@@ -66,10 +69,15 @@ function pollfn() {
     setTimeout(function () {
         if (remotePeer == true) {
             console.log("got Peeeeeer stream");
+            document.getElementById('remoteStream').style.display = 'none';
+            //switch button text and button / input location
+            var element = document.getElementById("connectElement");
+            element.innerHTML = "is streaming through me";
+            //element.appendChild(element.firstElementChild);
         } else {
             pollfn()
         };
-    }, 4000);
+    }, 2000);
 };
 
 // function pollfn() {
@@ -101,11 +109,12 @@ WebFont.load({
 
 // mask the video feed based on segmentation data
 async function maskVideo(segmentation) {
-    // do the standard masking
+    // do the standard masking on the local user video
     ctx1.drawImage(video, 0, 0, videoWidth, videoHeight);
 
-    //manipulate pixels
+    // manipulate pixels of local user video
     // mask person
+    ctxF.globalAlpha = 0.9;
     let frame = ctx1.getImageData(0, 0, videoWidth, videoHeight);
     let l = frame.data.length/4;
     //create array of image data
@@ -121,40 +130,51 @@ async function maskVideo(segmentation) {
     // write newImage (segmentation) on canvas2
     ctx2.putImageData(frame, 0, 0);
 
-    // convert canvas2 into Base64 code, clear the code-canvas(contextCode), write Base64 to code-canvas
-    var dataUrl = canvas2.toDataURL();
+    // get video from remote stream, draw it on canvasBase
+    let videoRemote = document.getElementById('remoteStream');
+    contextBase.drawImage(videoRemote, 0, 0, videoWidth, videoHeight);
+
+    // here is where the magic happens:
+    // convert canvasBase(our former remote Stream) into Base64 code, clear the code-canvas(contextCode), write Base64 to code-canvas
+    var dataUrl = canvasBase.toDataURL();
     var lines = dataUrl.split('/');
     void contextCode.clearRect(0, 0, 640, 740);
     for (var i = 0; i<lines.length; i++)
-        contextCode.fillText(lines[i], 0, 0 + (i*4) );
-        contextCode.font = "5px Cutive Mono";
-    //draw canvas2 (segmentation mask) on canvasF (finalcanvas), take pixel data from code-canvas(contextCode)
+        contextCode.fillText(lines[i], 0, 0 + (i*8) );
+        contextCode.font = "8px Cutive Mono";
+    //draw canvas2 (segmentation mask) on canvasF (finalcanvas), take pixel data (Base64 code) from code-canvas(remote Stream)
     let frameF = ctx2.getImageData(0, 0, videoWidth, videoHeight);
     let lF = frameF.data.length/4;
     let frameC = contextCode.getImageData(0, 0, 640, 740);
     let lC = frameC.data.length/4;
 
     for (let i = 0; i < lC; i++) {
-        // if (segmentation[i] == 1) {
-        //     //draw mask with code background
-        //     frameF.data[i*4] = frameC.data[i];
-        //     frameF.data[i*4 + 1] = frameC.data[i*4 + 1];
-        //     frameF.data[i*4 + 2] = frameC.data[i*4 + 2];
-        //     frameF.data[i*4 + 3] = frameC.data[i*4 + 3];
-        // }
         if (segmentation[i] == 1) {
-            //draw mask with green background
-            frameF.data[i*4] = frameF.data[i];
-            frameF.data[i*4 + 1] = frameF.data[i*4 + 1];
-            frameF.data[i*4 + 2] = frameF.data[i*4 + 2];
-            frameF.data[i*4 + 3] = frameF.data[i*4 + 3];
+            //draw silhoutte in white with code floating through
+            frameF.data[i*4] = frameC.data[i];
+            frameF.data[i*4 + 1] = frameC.data[i*4 + 1];
+            frameF.data[i*4 + 2] = frameC.data[i*4 + 2];
+            frameF.data[i*4 + 3] = frameC.data[i*4 + 3];
         }
+        // if (segmentation[i] == 1) {
+        //     //draw mask with green background
+        //     frameF.data[i*4] = frameF.data[i];
+        //     frameF.data[i*4 + 1] = frameF.data[i*4 + 1];
+        //     frameF.data[i*4 + 2] = frameF.data[i*4 + 2];
+        //     frameF.data[i*4 + 3] = frameF.data[i*4 + 3];
+        // }
         if (segmentation[i] == 0) {
-            //draw white background
-            frameF.data[i*4] = 0;
-            frameF.data[i*4 + 1] = 230;
-            frameF.data[i*4 + 2] = 20;
-            frameF.data[i*4 + 3] = 100;
+            //draw green background
+            // frameF.data[i*4] = 0;
+            // frameF.data[i*4 + 1] = 230;
+            // frameF.data[i*4 + 2] = 20;
+            // frameF.data[i*4 + 3] = 100;
+
+            // draw mask a little bit to the right - creates the local stream as shadow
+            frameF.data[i*4 + 99] = 50;
+            frameF.data[i*4 + 100] = 200;
+            frameF.data[i*4 + 101] = 100;
+            frameF.data[i*4 + 102] = 130;
         }
     }
     ctxF.putImageData(frameF, 0, 0);
