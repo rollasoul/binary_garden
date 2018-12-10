@@ -33,7 +33,6 @@ document.getElementById('thevideo').style.display = 'none';
 document.getElementById('myvideo').style.display = 'none';
 document.getElementById('output1').style.display = 'none';
 document.getElementById('output2').style.display = 'none';
-//document.getElementById('outputB').style.display = 'none';
 document.getElementById('canvasCode').style.display = 'none';
 document.getElementById('canvasBase').style.display = 'none';
 // Constraints - what do we want?
@@ -74,6 +73,7 @@ function pollfn() {
             var element = document.getElementById("connectElement");
             element.innerHTML = "is streaming through me";
             //element.appendChild(element.firstElementChild);
+            drawPeer();
         } else {
             pollfn()
         };

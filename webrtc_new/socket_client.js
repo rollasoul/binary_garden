@@ -10,6 +10,7 @@
 	var peer = null;
 	var remotePeer = false;
 	var remoteStream;
+	var clientList;
 
 	// Constraints - what do we want?
 	let constraints = { audio: false, video: true }
@@ -54,6 +55,7 @@
 			sendId(message);
 			sockets.on('peerId', function (clients) {
 				console.log("somebody connected, received new list of clients: " + clients)
+				clientList = clients;
 			});
 		});
 
@@ -83,10 +85,24 @@
 		});
 		var btn = document.querySelector('button');
 		btn.onclick = function() {
+			//get a random number to select a random client from array
+			function randomPeer() {
+				function getRandomNumber(min, max) {
+				   let random_number = Math.random() * (max-min) + min;
+				    return Math.floor(random_number);
+				}
+				var randInt = getRandomNumber(0, (clientList.length));
+				streamingPeer = clientList[randInt];
+				if (streamingPeer == peer_id) {
+					randomPeer();
+				};
+			};
+			randomPeer();
+			// call the selected client
 			var idToCall = document.getElementById('tocall').value;
-			console.log("peer: " + peer);
-			var call = peer.call(idToCall, my_stream);
-			console.log("made a call: " + call);
+			//console.log("peer: " + peer);
+			var call = peer.call(streamingPeer, my_stream);
+			console.log("made a call to this random peer: " + streamingPeer);
 
 			call.on('stream', function(l_remoteStream) {
 				remoteStream = l_remoteStream;
