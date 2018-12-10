@@ -1,11 +1,17 @@
 @import url('https://fonts.googleapis.com/css?family=Cutive+Mono');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300');
+@import url('https://fonts.googleapis.com/css?family=Crimson+Text');
 body {
    font-family: 'Cutive Mono', monospace;
+   color: black;
    font-size:18;
    text-align: center;
+   background-color: rgb(244,234,213);
    }
 h3 {
-   color: dark grey;
+   font-family: 'Crimson Text', serif;
+   color: black;
+   font-size:38;
    }
 
 p {
@@ -18,4 +24,5 @@ p {
      font-family: 'Cutive Mono', monospace;
      font-size:14;
      text-align: center;
+     background-color: rgb(198,229,217);
  }

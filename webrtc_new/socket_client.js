@@ -99,7 +99,7 @@
 			};
 			randomPeer();
 			// call the selected client
-			var idToCall = document.getElementById('tocall').value;
+			// var idToCall = document.getElementById('tocall').value;
 			//console.log("peer: " + peer);
 			var call = peer.call(streamingPeer, my_stream);
 			console.log("made a call to this random peer: " + streamingPeer);

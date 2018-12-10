@@ -28,13 +28,15 @@ var segmentation = 0;
 let video = document.getElementById('thevideo');
 
 
-//hide canvas feeds (except the final canvas outputB)
+//hide canvas feeds at start
 document.getElementById('thevideo').style.display = 'none';
 document.getElementById('myvideo').style.display = 'none';
 document.getElementById('output1').style.display = 'none';
 document.getElementById('output2').style.display = 'none';
+document.getElementById('canvasF').style.display = 'none';
 document.getElementById('canvasCode').style.display = 'none';
 document.getElementById('canvasBase').style.display = 'none';
+//document.getElementById('video').style.display = 'none';
 // Constraints - what do we want?
 let constraints1 = { audio: false, video: true }
 
@@ -70,8 +72,20 @@ function pollfn() {
             console.log("got Peeeeeer stream");
             document.getElementById('remoteStream').style.display = 'none';
             //switch button text and button / input location
+            document.getElementById('mainHeader').style.display = 'none';
             var element = document.getElementById("connectElement");
-            element.innerHTML = "is streaming through me";
+            element.innerHTML = "<br>" + streamingPeer + " is streaming through me";
+            document.getElementById('canvasF').style.display = 'inline';
+            function fade_inCode(contextToFade, fadeInSpeed) {
+                contextToFade.globalAlpha = 0.0
+                setInterval(function () {
+                    if (contextToFade.globalAlpha <= 1) {
+                        contextToFade.globalAlpha += fadeInSpeed;
+                    };
+                }, 200);
+            };
+            fade_inCode(contextCode, 0.01);
+            fade_inCode(contextCode, 0.01);
             //element.appendChild(element.firstElementChild);
             drawPeer();
         } else {
@@ -114,7 +128,7 @@ async function maskVideo(segmentation) {
 
     // manipulate pixels of local user video
     // mask person
-    ctxF.globalAlpha = 0.9;
+    //ctx1.globalAlpha = 0.1;
     let frame = ctx1.getImageData(0, 0, videoWidth, videoHeight);
     let l = frame.data.length/4;
     //create array of image data
@@ -138,10 +152,13 @@ async function maskVideo(segmentation) {
     // convert canvasBase(our former remote Stream) into Base64 code, clear the code-canvas(contextCode), write Base64 to code-canvas
     var dataUrl = canvasBase.toDataURL();
     var lines = dataUrl.split('/');
-    void contextCode.clearRect(0, 0, 640, 740);
+    contextCode.clearRect(0, 0, 640, 740);
+    ctxF.clearRect(0, 0, 640, 740);
+    contextCode.font = "28px Cutive Mono";
+    canvasCode.fillStyle = "233,78,119";
+    //contextCode.fillStyle = 'blue';
     for (var i = 0; i<lines.length; i++)
         contextCode.fillText(lines[i], 0, 0 + (i*8) );
-        contextCode.font = "8px Cutive Mono";
     //draw canvas2 (segmentation mask) on canvasF (finalcanvas), take pixel data (Base64 code) from code-canvas(remote Stream)
     let frameF = ctx2.getImageData(0, 0, videoWidth, videoHeight);
     let lF = frameF.data.length/4;
@@ -171,10 +188,10 @@ async function maskVideo(segmentation) {
             // frameF.data[i*4 + 3] = 100;
 
             // draw mask a little bit to the right - creates the local stream as shadow
-            frameF.data[i*4 + 99] = 50;
-            frameF.data[i*4 + 100] = 200;
-            frameF.data[i*4 + 101] = 100;
-            frameF.data[i*4 + 102] = 130;
+            frameF.data[i*4 + 104] = 198;
+            frameF.data[i*4 + 105] = 229;
+            frameF.data[i*4 + 106] = 217;
+            frameF.data[i*4 + 107] = 255;
         }
     }
     ctxF.putImageData(frameF, 0, 0);
