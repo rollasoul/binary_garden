@@ -198,9 +198,9 @@ async function maskVideo(segmentation) {
 
             // draw mask a little bit to the right - creates the local stream as shadow
             if (i <= 200) {
-                frameF.data[i*4 + 0] = 198;
-                frameF.data[i*4 + 1] = 229;
-                frameF.data[i*4 + 2] = 217;
+                frameF.data[i*4 + 0] = 244;
+                frameF.data[i*4 + 1] = 234;
+                frameF.data[i*4 + 2] = 213;
                 frameF.data[i*4 + 3] = 255;
             } else {
                 // frameF.data[i*4 + 0] = frameB.data[i*4 + 0];
@@ -211,12 +211,15 @@ async function maskVideo(segmentation) {
             frameF.data[i*4 + 104] = 198;
             frameF.data[i*4 + 105] = 229;
             frameF.data[i*4 + 106] = 217;
-            frameF.data[i*4 + 107] = 255;
+            frameF.data[i*4 + 107] = 0;
         };
     };
     ctxF.putImageData(frameF, 0, 0);
-    contextBase.putImageData(frameF,0, 0)
-    contextTransparent.putImageData(frameC,0, 0)
+    // rotate 180 degrees for mirror effect
+    contextBase.scale(-1, -1);
+    contextBase.putImageData(frameF,0, 0);
+    contextBase.restore();
+    contextTransparent.putImageData(frameC,0, 0);
 };
 
 

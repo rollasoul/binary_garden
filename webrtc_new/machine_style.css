@@ -43,13 +43,13 @@ p {
      grid-column: 2;
      grid-row: 1 / 4;
      writing-mode: vertical-rl;
-     background-color: rgba(198,164,154,0.2);
+     background-color: rgba(198,164,154,0.7);
 }
 
 .mirror {
     grid-column: 2;
     grid-row: 3 / 5;
-    background-color: rgb(233,78,119);
+    background-color: rgba(233,78,119, 0);
 }
 
 .mirrorT {
