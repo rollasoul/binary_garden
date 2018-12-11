@@ -17,11 +17,21 @@
 		<canvas id="output1" width="640" height="720"></canvas>
 		<canvas id="output2" width="640" height="720"></canvas>
 		<canvas id="canvasF" width="640" height="720"></canvas>
-		<canvas id="canvasBase" width="640" height="720"></canvas>
 		<br>
 		<h3 id="mainHeader">to see the truth you have to empty yourself first.</h3>
-		<div id="connectElement">
-			<button id="connectButton">make me a vessel</button>
+		<div id="peerElements" class="peerElements">
+			<div id="streamBanner" class="banner" style="transform: skewx(-40deg) translatex(-150px) translatey(10px);
+				transform-origin: bottom right;"></div>
+			<canvas id="canvasBase" class="mirror" width="320" height="360" style="transform: skewx(-40deg) translatex(-150px) translatey(10px);
+				transform-origin: bottom right;"></canvas>
+			<div class="stream">
+				<canvas id="stream" width="640" height="720"></canvas>
+			</div>
+			<canvas id="canvasTransparent" class="mirrorT" width="320" height="360" style="transform: skewx(40deg) translatex(50px) translatey(10px);
+				transform-origin: top left;"></canvas>
+			<div id="connectElement" class="button">
+				<button id="connectButton" class=button>make me a vessel</button>
+			</div>
 		</div>
 		<canvas id="canvasCode" width="640" height="720"></canvas>
 	</body>
