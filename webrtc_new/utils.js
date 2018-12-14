@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////
 // rewrite and modification of tensorflow person-segmentation masking//
 //////////////////////////////////////////////////////////////////////
@@ -28,7 +29,7 @@ var segmentation = 0;
 
 // The video element on the page to display the webcam
 let video = document.getElementById('thevideo');
-
+//let videoR = document.getElementById('output2');
 
 //hide canvas feeds at start
 document.getElementById('thevideo').style.display = 'none';
@@ -39,6 +40,9 @@ document.getElementById('stream').style.display = 'none';
 document.getElementById('canvasCode').style.display = 'none';
 document.getElementById('canvasBase').style.display = 'none';
 document.getElementById('canvasF').style.display = 'none';
+//document.getElementById('remoteStream').style.display = 'none';
+document.getElementById('canvasTransparent').style.display = 'none';
+document.getElementById('streamBanner').style.display = 'none';
 // Constraints - what do we want?
 let constraints1 = { audio: false, video: true }
 
@@ -80,8 +84,9 @@ function pollfn() {
             document.getElementById('canvasBase').style.display = 'inline';
             document.getElementById('stream').style.display = 'inline';
             document.getElementById('canvasTransparent').style.display = 'inline';
+	    document.getElementById('streamBanner').style.display = 'inline';
             document.getElementById('streamBanner').innerHTML = "<br>" + "peer " + streamingPeer + "<br>" + " is streaming through me" + "<br>" + "* * *";
-            //document.getElementById('connectButton').style.display = 'grid-column: 1';
+            document.getElementById('connectButton').style.display = 'none';
             //document.getElementById('connectButton').innerHTML = "switch code streams";
             function fade_inCode(contextToFade, fadeInSpeed) {
                 contextToFade.globalAlpha = 0.0
@@ -89,16 +94,18 @@ function pollfn() {
                     if (contextToFade.globalAlpha <= 1) {
                         contextToFade.globalAlpha += fadeInSpeed;
                     };
-                }, 200);
+                }, 500);
             };
             fade_inCode(contextCode, 0.005);
             //fade_inCode(ctxF, 0.01);
             //element.appendChild(element.firstElementChild);
-            drawPeer();
+            //drawPeer();
+            //runModelRemote();
+            drawMe();
         } else {
             pollfn()
         };
-    }, 2000);
+    }, 200);
 };
 
 // function pollfn() {
@@ -110,15 +117,17 @@ function pollfn() {
 //     };
 // };
 
-function drawPeer() {
-    video.width = videoWidth;
-    video.height = videoHeight;
-    video.srcObject = remoteStream;
-    video.onloadedmetadata = function(e) {
-            video.play();
-            runModel();
-    };
-};
+//let videoR = document.getElementById('remoteStream');
+
+//function drawPeer() {
+//    videoR.width = videoWidth;
+//    videoR.height = videoHeight;
+//    videoR.srcObject = remoteStream;
+//    videoR.onloadedmetadata = function(e) {
+//            videoR.play();
+//            runModelRemote();
+//    };
+//};
 
 //preload the personSegmentation from prediction to speed up process
 var loaded = personSegmentation.load();
@@ -131,8 +140,8 @@ WebFont.load({
 // mask the video feed based on segmentation data
 async function maskVideo(segmentation) {
     // do the standard masking on the local user video
-    ctx1.drawImage(video, 0, 0, videoWidth, videoHeight);
-
+    ctx1.drawImage(myvideo, 0, 0, videoWidth, videoHeight);
+    //ctx2.drawImage(remoteVideo, 0, 0, videoWidth, videoHeight);
     // manipulate pixels of local user video
     // mask person
     //ctx1.globalAlpha = 0.1;
@@ -169,8 +178,8 @@ async function maskVideo(segmentation) {
     //draw canvas2 (segmentation mask) on canvasF (finalcanvas), take pixel data (Base64 code) from code-canvas(remote Stream)
     let frameF = ctx2.getImageData(0, 0, videoWidth, videoHeight);
     let lF = frameF.data.length/4;
-    // let frameB = contextBase.getImageData(0, 0, videoWidth, videoHeight);
-    // let lB = frameB.data.length/4;
+    //let frameB = contextBase.getImageData(0, 0, videoWidth, videoHeight);
+    //let lB = frameB.data.length/4;
     let frameC = contextCode.getImageData(0, 0, 640, 740);
     let lC = frameC.data.length/4;
 
@@ -226,11 +235,22 @@ async function maskVideo(segmentation) {
 // main function in cascade-mode
 async function runModel() {
     loaded.then(function(net){
-    console.log("got model, running model");
+    console.log("got model, running model locally");
       return net.estimatePersonSegmentation(video, flipHorizontal, 8, segmentationThreshold)
   }).then(function(segmentation){
       maskVideo(segmentation);
       // loops the function in a browser-sustainable way
       requestAnimationFrame(runModel);
+    });
+}
+
+async function runModelRemote() {
+    loaded.then(function(netR){
+    console.log("got model, running model on remote");
+      return netR.estimatePersonSegmentation(canvasBase, flipHorizontal, 8, segmentationThreshold)
+  }).then(function(segmentation){
+      maskVideo(segmentation);
+      // loops the function in a browser-sustainable way
+      requestAnimationFrame(runModelRemote);
     });
 }

@@ -4,8 +4,8 @@ var fs = require('fs');
 var url =  require('url');
 
 var options = {
-  key: fs.readFileSync('/Users/rolandarnoldt/Documents/machine-learning-for-the-web/dev/binary_garden/webrtc_new/fake_pems/privatekey.pem'),
-  cert: fs.readFileSync('/Users/rolandarnoldt/Documents/machine-learning-for-the-web/dev/binary_garden/webrtc_new/fake_pems/certificate.pem')
+  key: fs.readFileSync('/root/itp_io_cert/my-key.pem'),
+  cert: fs.readFileSync('/root/itp_io_cert/my-cert.pem')
 };
 
 
@@ -46,9 +46,9 @@ function handleIt(req, res) {
 var httpServer = http.createServer(options, handleIt);
 
 // Tell that server to listen on port 8001
-httpServer.listen(8001);
+httpServer.listen(8007);
 
-console.log('Server listening on port 8001');
+console.log('Server listening on port 8007');
 
 //////////////////////////
 
