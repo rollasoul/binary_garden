@@ -74,5 +74,12 @@ io.sockets.on('connection',
             clients.push(message);
             io.sockets.emit('peerId', clients);
         });
+	
+	//listen for updates from the clients, distribute updated list 
+        socket.on('updatedClientList', function(nuList) {
+            clients = nuList;
+            io.sockets.emit('peerId', clients);
+        });
+
 	}
 );

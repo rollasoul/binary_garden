@@ -60,11 +60,30 @@
 		});
 
 
-		// peer server part
+		// peer server part, update list of clients if they are not available anymore	
+		// output of error function as indicator, if peer cannot connect to peer, list gets modified and sent out to all clients  
 		peer.on('error', function(err) {
-			console.log(err);
+			let logError = err.toString();
+			console.log(logError);
+			for (var i = 0; i < clientList.length; i++){
+				if (logError.includes(clientList[i]) == true){
+					clientList.splice(i, 1);
+					sockets = io.connect();
+					var message = clientList;
+					var updateList = function(message) {
+						sockets.emit('updatedClientList', message);
+					};
+					updateList(message)
+					//console.log(clientList);
+					if (clientList.length > 1) {
+						console.log("connecting to peer")
+						connectToPeer();
+					} else {
+						document.getElementById('mainHeader').innerHTML = "no peers to connect to, sorry :("
+					};
+				};
+			};
 		});
-
 
 		peer.on('call', function(incoming_call) {
 			console.log("Got a call!");
@@ -84,7 +103,8 @@
 			});
 		});
 		var btn = document.querySelector('button');
-		btn.onclick = function() {
+		btn.onclick = connectToPeer; //run random selection on button click
+		function connectToPeer() {
 			//get a random number to select a random client from array
 			function randomPeer() {
 				function getRandomNumber(min, max) {
