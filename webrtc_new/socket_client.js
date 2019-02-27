@@ -39,7 +39,7 @@
 		});
 	});
 	function connectPeer() {
-        peer = new Peer({host: 'ra2548-2.itp.io', port: 9000, path: '/'});
+        peer = new Peer({host: 'your_peer_host', port: port_number, path: '/'});
 		// Get an ID from the PeerJS server
 		peer.on('open', function(id) {
 			console.log('My peer ID is: ' + id);
